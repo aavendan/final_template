@@ -168,6 +168,6 @@ def scoring(submission):
         maximum += question_el.grade
 
     note = sum(score) 
-    grade = int(note*100/maximum)
+    grade = int(note*100/maximum) if len(questioning) > 0 else 0
 
     return grade,all_ids
