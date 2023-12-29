@@ -75,6 +75,9 @@ class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     content = models.TextField()
 
+    def __str__(self):
+        return "Text: " + self.content
+
 
 # Enrollment model
 # <HINT> Once a user enrolled a class, an enrollment entry should be created between the user and course
@@ -94,6 +97,9 @@ class Enrollment(models.Model):
     mode = models.CharField(max_length=5, choices=COURSE_MODES, default=AUDIT)
     rating = models.FloatField(default=5.0)
 
+    def __str__(self):
+        return self.user.username+" / "+self.course.name
+
 
 # <HINT> Create a Question Model with:
     # Used to persist question content for a course
@@ -110,6 +116,8 @@ class Question(models.Model):
     # Foreign key to lesson
     # question text
     # question grade/mark
+    def __str__(self):
+        return "Text: " + self.question_text
 
 
     # <HINT> A sample model method to calculate if learner get the score of the question
@@ -132,6 +140,9 @@ class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(null=False, max_length=30, default='choice')
     is_correct = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "Text: " + self.choice_text
 
 # <HINT> The submission model
 # One enrollment could have multiple submission

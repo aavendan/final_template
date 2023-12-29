@@ -113,10 +113,15 @@ def enroll(request, course_id):
 def submit(request, course_id):
     user = request.user
     enrollment = Enrollment.objects.get(user=user, course=course_id)
-    selected_choices = extract_answers(request)
-    print(selected_choices) 
+    choices = Choice.objects.filter(id__in=extract_answers(request))
+    
+    print(enrollment)
+    print(choices)
 
-    #submission = Submission.objects.create(enrollment=enrollment)
+    #for choice in choices:
+    # Enrollment.objects.create(user=user, course=course, mode='honor')
+    submission = Submission.objects.create(enrollment=enrollment)
+    submission.choices.set(choices)
     return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(enrollment.course.id,)))
 
 
