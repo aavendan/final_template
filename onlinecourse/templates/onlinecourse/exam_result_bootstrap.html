@@ -54,14 +54,23 @@
         {% for question in questions %}
             <div class="card mt-1">
                 <div class="card-header"><h5>{{ question.question_text}}</h5></div>
-                {% for choice in question.choices %}
-                    {{ choice }}
+                <div class="card-body">
+                {% for choice in question.choice_set.all %}
+                    {% if choice.is_correct %}
+                        {% if choice.id in ids %}
+                            <div class="text-success">
+                                {{ choice.choice_text }} <br>
+                            </div>
+                        {% else %}
+                            <div class="text-warning">
+                                {{ choice.choice_text }} <br>
+                            </div>
+                        {% endif %}
+                    {% endif %}
                 {% endfor %}
+                </div>
             </div>
         {% endfor %}
-        <!-- {% for question in course.question.all %}
-            {{ question.question_text}}
-        {% endfor %} -->
     </div>
     </div>
 </body>
