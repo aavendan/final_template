@@ -115,14 +115,10 @@ def submit(request, course_id):
     enrollment = Enrollment.objects.get(user=user, course=course_id)
     choices = Choice.objects.filter(id__in=extract_answers(request))
     
-    print(enrollment)
-    print(choices)
-
-    #for choice in choices:
-    # Enrollment.objects.create(user=user, course=course, mode='honor')
     submission = Submission.objects.create(enrollment=enrollment)
     submission.choices.set(choices)
-    return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(enrollment.course.id,)))
+    
+    return HttpResponseRedirect(reverse(viewname='onlinecourse:show_exam_result', args=(enrollment.course.id, submission.id)))
 
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
@@ -142,7 +138,37 @@ def extract_answers(request):
         # Get the selected choice ids from the submission record
         # For each selected choice, check if it is a correct answer or not
         # Calculate the total score
-#def show_exam_result(request, course_id, submission_id):
+def show_exam_result(request, course_id, submission_id):
+    course = Enrollment.objects.get(id=course_id)
+    submission = Submission.objects.get(id=submission_id)
+    questions = Question.objects.filter(course__id=course_id)
 
+    grade,ids = scoring(submission)
 
+    context = {}
+    context['course'] = course
+    context['grade'] = grade
+    context['submission'] = submission
+    context['questions'] = questions
+    context['ids'] = ids
+    
 
+    return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
+
+def scoring(submission):
+    score = []
+    maximum = 0
+
+    #unique questions ids 
+    questioning = list(set([ choice.question for choice in submission.choices.all() ]))
+    all_ids = [choice.id for choice in submission.choices.all()]
+
+    for question_el in questioning:
+        ids = [ choice.id for choice in submission.choices.all() if choice.question.id == question_el.id]
+        score.append(question_el.grade * question_el.is_get_score(ids))
+        maximum += question_el.grade
+
+    note = sum(score) 
+    grade = int(note*100/maximum)
+
+    return grade,all_ids

@@ -142,7 +142,7 @@ class Choice(models.Model):
     is_correct = models.BooleanField(default=True)
 
     def __str__(self):
-        return "Text: " + self.choice_text
+        return "Question: "+self.question.question_text+", Text: " + self.choice_text
 
 # <HINT> The submission model
 # One enrollment could have multiple submission
